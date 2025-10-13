@@ -1,15 +1,11 @@
 "use client";
 import React, { useState } from "react";
 import Image from "next/image";
-import {
-  FaFacebookF,
-  FaInstagram,
-  FaLinkedinIn,
-  FaTiktok,
-  FaXTwitter,
-} from "react-icons/fa6";
+import { FaFacebookF, FaInstagram, FaLinkedinIn, FaTiktok, FaXTwitter } from "react-icons/fa6";
 import { FaStar } from "react-icons/fa";
+import { faMagnifyingGlass } from "@fortawesome/free-solid-svg-icons";
 import "./globals.css";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 export default function HomePage() {
 const API_URL = "http://127.0.0.1:8000/api/auth";
@@ -225,7 +221,7 @@ const handleRegister = async () => {
             className="flex-grow px-6 py-3 bg-transparent outline-none text-[#0b615b] placeholder-[#64a7b3]"
           />
           <button className="bg-[#0b615b] text-white px-6 hover:bg-[#0a7f77] transition">
-            🔍
+            {<FontAwesomeIcon icon={faMagnifyingGlass}/>}
           </button>
         </div>
       </section>
@@ -329,7 +325,7 @@ const handleRegister = async () => {
 
       {/* MODAL LOGIN */}
       {showLogin && (
-        <div className="fixed inset-0 bg-black bg-opacity-40 flex justify-center items-center z-50 transition">
+        <div className="fixed inset-0 bg-[#00000095] flex justify-center items-center z-50 transition">
           <div className="bg-white rounded-2xl shadow-lg p-10 w-[90%] max-w-md relative text-center">
             <button
               onClick={() => setShowLogin(false)}
@@ -384,7 +380,7 @@ const handleRegister = async () => {
 
       {/* MODAL REGISTRO */}
 {showRegister && (
-  <div className="fixed inset-0 bg-black bg-opacity-40 flex justify-center items-center z-50 transition">
+  <div className="fixed inset-0 bg-[#00000095] flex justify-center items-center z-50 transition">
     <div className="bg-white rounded-2xl shadow-lg p-10 w-[90%] max-w-md relative text-center animate-fadeIn">
       {/* BOTÓN DE CIERRE */}
       <button
