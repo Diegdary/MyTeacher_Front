@@ -6,11 +6,11 @@ import { FaStar } from "react-icons/fa";
 import { faMagnifyingGlass } from "@fortawesome/free-solid-svg-icons";
 import "./globals.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-
+import { useRouter } from "next/navigation";
 
 export default function HomePage() {
 const API_URL = "http://127.0.0.1:8000/api/auth";
-
+const router = useRouter();
 const [showLogin, setShowLogin] = useState(false);
 const [showRegister, setShowRegister] = useState(false);
 const [email, setEmail] = useState("");
@@ -133,7 +133,7 @@ const handleRegister = async () => {
         </div>
         <div className="flex gap-4">
           <button
-            onClick={() => setShowRegister(true)}
+            onClick={() => router.push("/tutor/BeTutor")}
             className="bg-[#d3f9ff] text-[#0b615b] px-5 py-2 rounded-full font-medium hover:bg-[#bdf2ff] transition"
           >
             Conviértete en tutor
