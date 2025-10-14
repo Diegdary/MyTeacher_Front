@@ -191,27 +191,7 @@ const handleRegister = async () => {
           </div>
         </div>
       </section>
-
-      {/* CATEGORÍAS */}
-      <section className="max-w-4xl w-full grid md:grid-cols-2 gap-6 text-center text-[#0b615b] px-4">
-        {[
-          { name: "Tutores de deportes", icon: "⚽" },
-          { name: "Tutores de música", icon: "🎵" },
-          { name: "Tutores de inglés", icon: "EN" },
-          { name: "Tutores de matemáticas", icon: "∑" },
-        ].map((cat, i) => (
-          <div
-            key={i}
-            className="border border-[#0b615b] rounded-xl py-6 px-4 flex items-center justify-between hover:bg-[#e5ffff] transition"
-          >
-            <span className="text-lg font-semibold flex items-center gap-3">
-              <span className="text-2xl">{cat.icon}</span> {cat.name}
-            </span>
-            <span className="text-[#0b615b] text-xl">➜</span>
-          </div>
-        ))}
-      </section>
-
+      
       {/* BUSCADOR */}
       <section className="mt-14 mb-4 w-full flex justify-center">
         <div className="flex w-[80%] max-w-lg rounded-full overflow-hidden bg-gradient-to-r from-[#c7f4ff] to-[#e8ffff] shadow-sm">
@@ -230,16 +210,48 @@ const handleRegister = async () => {
         Contamos con miles de tutores calificados y evaluados <FaStar />
       </p>
 
+
+      {/* CATEGORÍAS */}
+      <section className="mt-5 max-w-4xl w-full grid md:grid-cols-2 gap-6 text-center text-[#0b615b] px-4">
+        {[
+          { name: "Tutores de deportes", icon: "⚽" },
+          { name: "Tutores de música", icon: "🎵" },
+          { name: "Tutores de inglés", icon: "EN" },
+          { name: "Tutores de matemáticas", icon: "∑" },
+        ].map((cat, i) => (
+          <div
+            key={i}
+            className="border border-[#0b615b] rounded-xl py-6 px-4 flex items-center justify-between hover:bg-[#e5ffff] transition"
+          >
+            <span className="text-lg font-semibold flex items-center gap-3">
+              <span className="text-2xl">{cat.icon}</span> {cat.name}
+            </span>
+            <span className="text-[#0b615b] text-xl">➜</span>
+          </div>
+        ))}
+      </section>
+
+      
+
       {/* TUTORES */}
-      <section className="max-w-6xl mx-auto px-4 grid md:grid-cols-4 gap-6">
+      <section className="mt-14 max-w-6xl mx-auto px-4 grid md:grid-cols-4 gap-6">
         {[1, 2, 3, 4].map((i) => (
           <div
             key={i}
             className="bg-white rounded-xl shadow-md p-4 text-center border border-[#e0e0e0]"
           >
-            <div className="w-full h-52 bg-gray-200 rounded-md flex items-center justify-center">
-              <span className="text-gray-500 text-sm">[Foto tutor]</span>
+          <div className="md:w-1/2 mt-10 md:mt-0 flex justify-center">
+            <div className="w-[380px] h-[250px] rounded-xl overflow-hidden shadow-lg border-4 border-white hover:shadow-2xl transition-all duration-300">
+              <Image
+                src="/julio_profe.png"
+                alt="Tutor explicando en videollamada"
+                width={400}
+                height={250}
+                className="object-cover w-full h-full"
+                priority
+              />
             </div>
+          </div>
             <div className="mt-3 text-sm text-gray-700 space-y-1">
               <p className="font-semibold">50k / hora</p>
               <p className="flex justify-center items-center gap-1 text-[#0b615b]">
