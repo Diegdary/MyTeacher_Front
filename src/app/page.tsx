@@ -7,6 +7,7 @@ import { faMagnifyingGlass } from "@fortawesome/free-solid-svg-icons";
 import "./globals.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
+
 export default function HomePage() {
 const API_URL = "http://127.0.0.1:8000/api/auth";
 
@@ -126,8 +127,10 @@ const handleRegister = async () => {
   return (
     <main className="flex flex-col items-center w-full overflow-hidden">
       {/* NAVBAR */}
-      <nav className="w-full flex justify-between items-center px-10 py-4 bg-white shadow-sm fixed top-0 z-50">
-        <h1 className="text-[#0b615b] text-2xl font-semibold">my TEACHER</h1>
+      <nav className="w-full flex justify-between items-center px-10 py-2 bg-white shadow-sm fixed top-0 z-50">
+        <div className="h-[60px] text-[#0b615b] text-2xl font-semibold">
+          <Image className="w-full h-full" src={'/logo_nav.png'} alt="Tutor explicando en videollamada" width={200} height={200}/>
+        </div>
         <div className="flex gap-4">
           <button
             onClick={() => setShowRegister(true)}
@@ -240,13 +243,13 @@ const handleRegister = async () => {
             key={i}
             className="bg-white rounded-xl shadow-md p-4 text-center border border-[#e0e0e0]"
           >
-          <div className="md:w-1/2 mt-10 md:mt-0 flex justify-center">
-            <div className="w-[380px] h-[250px] rounded-xl overflow-hidden shadow-lg border-4 border-white hover:shadow-2xl transition-all duration-300">
+          <div className="md:w-full mt-10 md:mt-0 flex justify-center">
+            <div className="w-full h-[250px] rounded-xl overflow-hidden shadow-lg border-4 border-white hover:shadow-2xl transition-all duration-300">
               <Image
                 src="/julio_profe.png"
                 alt="Tutor explicando en videollamada"
-                width={400}
-                height={250}
+                width={500}
+                height={500}
                 className="object-cover w-full h-full"
                 priority
               />
@@ -345,9 +348,8 @@ const handleRegister = async () => {
             >
               ✕
             </button>
-            <div className="flex flex-col items-center space-y-2">
-              <Image src="/file.svg" alt="Logo" width={50} height={50} />
-              <h2 className="text-3xl font-bold text-[#0b615b]">my TEACHER</h2>
+            <div className="flex justify-center h-[60px] text-[#0b615b] text-2xl font-semibold">
+              <Image className=" h-full" src={'/logo_nav.png'} alt="Tutor explicando en videollamada" width={200} height={200}/>
             </div>
             <h3 className="text-lg text-gray-600 mt-4 mb-6">INICIA SESIÓN</h3>
             {error && <p className="text-red-500 text-sm mb-3">{error}</p>}
@@ -403,9 +405,8 @@ const handleRegister = async () => {
       </button>
 
       {/* LOGO */}
-      <div className="flex flex-col items-center space-y-2">
-        <Image src="/file.svg" alt="Logo" width={50} height={50} />
-        <h2 className="text-3xl font-bold text-[#0b615b]">my TEACHER</h2>
+      <div className="flex justify-center h-[60px] text-[#0b615b] text-2xl font-semibold">
+        <Image className=" h-full" src={'/logo_nav.png'} alt="Tutor explicando en videollamada" width={200} height={200}/>
       </div>
 
       {/* TÍTULO */}
