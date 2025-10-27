@@ -49,15 +49,18 @@ const handleLogin = async () => {
       throw new Error(Array.isArray(msg) ? msg[0] : msg);
     }
 
-    // Guardar en localStorage
     localStorage.setItem("access", data.access);
     localStorage.setItem("refresh", data.refresh);
     localStorage.setItem("user", JSON.stringify(data.user));
 
-    // ✅ Actualizar el contexto global instantáneamente
     setUser(data.user);
 
+    window.dispatchEvent(new Event("userLoggedIn"));
+
+    
     setSuccess(`✅ Bienvenido ${data.user.username || data.user.email}`);
+
+    
     setTimeout(() => {
       setShowLogin(false);
       setEmail("");

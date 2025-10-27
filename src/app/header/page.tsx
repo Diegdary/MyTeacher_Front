@@ -14,11 +14,13 @@ export default function Header({
   const router = useRouter();
   const [openMenu, setOpenMenu] = useState(false);
 
+  // Determinar si el usuario es tutor
+  const esTutor = user?.rol?.toLowerCase?.() === "tutor";
+
   return (
     <header className="fixed top-0 left-0 right-0 z-50 bg-white/90 backdrop-blur-xl border-b border-[#dfe7e7] shadow-[0_4px_16px_rgba(0,0,0,0.04)]">
-      {/* contenedor centrado */}
       <div className="max-w-7xl mx-auto flex items-center justify-between h-16 px-4 md:px-8">
-        {/* --- LEFT: LOGO --- */}
+        {/* --- LOGO --- */}
         <button
           onClick={() => router.push("/")}
           className="flex items-center gap-2 shrink-0 hover:opacity-90 transition"
@@ -33,17 +35,25 @@ export default function Header({
           />
         </button>
 
-        {/* --- RIGHT: ACTIONS (tutor + login/user) --- */}
+        {/* --- ACCIONES --- */}
         <div className="flex items-center gap-4">
-          {/* botón tutor */}
-          <button
-            onClick={() => router.push("/tutor/BeTutor")}
-            className="hidden sm:inline-flex items-center rounded-full bg-[#0b615b]/10 text-[#0b615b] text-sm font-medium px-4 py-2 hover:bg-[#0b615b]/15 transition"
-          >
-            Conviértete en tutor
-          </button>
+          {/* ✅ Mostrar solo si el usuario está logueado */}
+          {user && (
+            <button
+              onClick={() =>
+                router.push(esTutor ? "/tutor/panel" : "/tutor/BeTutor")
+              }
+              className={`hidden sm:inline-flex items-center rounded-full text-sm font-medium px-4 py-2 transition ${
+                esTutor
+                  ? "bg-[#0b615b] text-white hover:bg-[#094e4a] shadow-[0_8px_24px_rgba(11,97,91,0.35)]"
+                  : "bg-[#0b615b]/10 text-[#0b615b] hover:bg-[#0b615b]/15"
+              }`}
+            >
+              {esTutor ? "Panel de tutor" : "Conviértete en tutor"}
+            </button>
+          )}
 
-          {/* si hay usuario -> avatar con menú */}
+          {/* --- USUARIO --- */}
           {user ? (
             <div className="relative">
               <button
@@ -74,15 +84,17 @@ export default function Header({
                     Mi perfil
                   </button>
 
-                  <button
-                    onClick={() => {
-                      setOpenMenu(false);
-                      router.push("/tutor/BeTutor");
-                    }}
-                    className="w-full text-left px-4 py-2 hover:bg-[#0b615b]/5 text-[#0b615b] font-medium"
-                  >
-                    Mis clases
-                  </button>
+                  {esTutor && (
+                    <button
+                      onClick={() => {
+                        setOpenMenu(false);
+                        router.push("/tutor/panel");
+                      }}
+                      className="w-full text-left px-4 py-2 hover:bg-[#0b615b]/5 text-[#0b615b] font-medium"
+                    >
+                      Panel de tutor
+                    </button>
+                  )}
 
                   <button
                     onClick={() => {
@@ -97,7 +109,6 @@ export default function Header({
               )}
             </div>
           ) : (
-            // si NO hay usuario -> botón iniciar sesión
             <button
               onClick={onLoginClick}
               className="inline-flex items-center rounded-full bg-[#0b615b] text-white text-sm font-medium px-4 py-2 hover:bg-[#094e4a] transition shadow-[0_8px_24px_rgba(11,97,91,0.35)]"
