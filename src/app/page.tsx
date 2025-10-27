@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Image from "next/image";
 import { FaFacebookF, FaInstagram, FaLinkedinIn, FaTiktok, FaXTwitter } from "react-icons/fa6";
 import { FaStar } from "react-icons/fa";
@@ -7,7 +7,9 @@ import { faMagnifyingGlass } from "@fortawesome/free-solid-svg-icons";
 import "./globals.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useRouter } from "next/navigation";
-
+import Header from "./header/page";
+import { useAuth } from "./context/AuthContext";
+import Categorias from "./categorias/page";
 export default function HomePage() {
 const API_URL = "http://127.0.0.1:8000/api/auth";
 const router = useRouter();
@@ -19,7 +21,8 @@ const [name, setName] = useState("");
 const [loading, setLoading] = useState(false);
 const [error, setError] = useState<string | null>(null);
 const [success, setSuccess] = useState<string | null>(null);
-
+const [user] = useState<any | null>(null);
+const { setUser } = useAuth();
 // --- LOGIN ---
 const handleLogin = async () => {
   setError(null);
@@ -42,20 +45,17 @@ const handleLogin = async () => {
     const data = await res.json();
 
     if (!res.ok) {
-      if (data?.detail) {
-        throw new Error(data.detail);
-      } else if (typeof data === "object") {
-        const firstError = Object.values(data)[0];
-        throw new Error(Array.isArray(firstError) ? firstError[0] : firstError);
-      } else {
-        throw new Error("Error al iniciar sesión ❌");
-      }
+      const msg = data?.detail || Object.values(data)[0] || "Error al iniciar sesión ❌";
+      throw new Error(Array.isArray(msg) ? msg[0] : msg);
     }
 
-    // Guardar tokens en localStorage
+    // Guardar en localStorage
     localStorage.setItem("access", data.access);
     localStorage.setItem("refresh", data.refresh);
     localStorage.setItem("user", JSON.stringify(data.user));
+
+    // ✅ Actualizar el contexto global instantáneamente
+    setUser(data.user);
 
     setSuccess(`✅ Bienvenido ${data.user.username || data.user.email}`);
     setTimeout(() => {
@@ -70,6 +70,7 @@ const handleLogin = async () => {
     setLoading(false);
   }
 };
+
 
 // --- REGISTER ---
 const handleRegister = async () => {
@@ -122,30 +123,36 @@ const handleRegister = async () => {
     setLoading(false);
   }
 };
+useEffect(() => {
+  const fetchUser = async () => {
+    const token = localStorage.getItem("access");
+    if (!token) {
+      setUser(null);
+      return;
+    }
+    const res = await fetch(`${API_URL}/me/`, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    if (res.ok) {
+      const data = await res.json();
+      setUser(data);
+    }
+  };
+
+
+  fetchUser();
+
+ 
+  const handleLoginEvent = () => fetchUser();
+  window.addEventListener("userLoggedIn", handleLoginEvent);
+
+  return () => window.removeEventListener("userLoggedIn", handleLoginEvent);
+}, []);
 
 
   return (
     <main className="flex flex-col items-center w-full overflow-hidden">
-      {/* NAVBAR */}
-      <nav className="w-full flex justify-between items-center px-10 py-2 bg-white shadow-sm fixed top-0 z-50">
-        <div className="h-[60px] text-[#0b615b] text-2xl font-semibold">
-          <Image className="w-full h-full" src={'/logo_nav.png'} alt="Tutor explicando en videollamada" width={200} height={200}/>
-        </div>
-        <div className="flex gap-4">
-          <button
-            onClick={() => router.push("/tutor/BeTutor")}
-            className="bg-[#d3f9ff] text-[#0b615b] px-5 py-2 rounded-full font-medium hover:bg-[#bdf2ff] transition"
-          >
-            Conviértete en tutor
-          </button>
-          <button
-            onClick={() => setShowLogin(true)}
-            className="bg-[#d3f9ff] text-[#0b615b] px-5 py-2 rounded-full font-medium hover:bg-[#bdf2ff] transition"
-          >
-            Iniciar sesión
-          </button>
-        </div>
-      </nav>
+      <Header onLoginClick={() => setShowLogin(true)} />
 
       {/* HERO SECTION */}
       <section className="w-full bg-gradient-to-b from-[#c7f4ff] to-white text-center py-32 mt-16">
@@ -195,98 +202,45 @@ const handleRegister = async () => {
         </div>
       </section>
       
-      {/* BUSCADOR */}
-      <section className="mt-14 mb-4 w-full flex justify-center">
-        <div className="flex w-[80%] max-w-lg rounded-full overflow-hidden bg-gradient-to-r from-[#c7f4ff] to-[#e8ffff] shadow-sm">
-          <input
-            type="text"
-            placeholder="Busca aquí"
-            className="flex-grow px-6 py-3 bg-transparent outline-none text-[#0b615b] placeholder-[#64a7b3]"
-          />
-          <button className="bg-[#0b615b] text-white px-6 hover:bg-[#0a7f77] transition">
-            {<FontAwesomeIcon icon={faMagnifyingGlass}/>}
-          </button>
-        </div>
-      </section>
-
-      <p className="text-sm text-[#67b1b8] mb-10 flex items-center gap-1">
-        Contamos con miles de tutores calificados y evaluados <FaStar />
-      </p>
-
+    
 
       {/* CATEGORÍAS */}
-      <section className="mt-5 max-w-4xl w-full grid md:grid-cols-2 gap-6 text-center text-[#0b615b] px-4">
-        {[
-          { name: "Tutores de deportes", icon: "⚽" },
-          { name: "Tutores de música", icon: "🎵" },
-          { name: "Tutores de inglés", icon: "EN" },
-          { name: "Tutores de matemáticas", icon: "∑" },
-        ].map((cat, i) => (
-          <div
-            key={i}
-            className="border border-[#0b615b] rounded-xl py-6 px-4 flex items-center justify-between hover:bg-[#e5ffff] transition"
-          >
-            <span className="text-lg font-semibold flex items-center gap-3">
-              <span className="text-2xl">{cat.icon}</span> {cat.name}
-            </span>
-            <span className="text-[#0b615b] text-xl">➜</span>
-          </div>
-        ))}
-      </section>
-
+      <Categorias />
       
 
-      {/* TUTORES */}
-      <section className="mt-14 max-w-6xl mx-auto px-4 grid md:grid-cols-4 gap-6">
-        {[1, 2, 3, 4].map((i) => (
-          <div
-            key={i}
-            className="bg-white rounded-xl shadow-md p-4 text-center border border-[#e0e0e0]"
-          >
-          <div className="md:w-full mt-10 md:mt-0 flex justify-center">
-            <div className="w-full h-[250px] rounded-xl overflow-hidden shadow-lg border-4 border-white hover:shadow-2xl transition-all duration-300">
-              <Image
-                src="/julio_profe.png"
-                alt="Tutor explicando en videollamada"
-                width={500}
-                height={500}
-                className="object-cover w-full h-full"
-                priority
-              />
-            </div>
-          </div>
-            <div className="mt-3 text-sm text-gray-700 space-y-1">
-              <p className="font-semibold">50k / hora</p>
-              <p className="flex justify-center items-center gap-1 text-[#0b615b]">
-                <FaStar className="text-yellow-400" /> 5/5 (69 opiniones)
-              </p>
-              <p className="text-gray-500 text-xs leading-tight">
-                Baile erótico. Soy Samuel, bailarín desde hace años, mente
-                abierta...
-              </p>
-            </div>
-          </div>
-        ))}
-      </section>
-
+      
       {/* SECCIÓN VUÉLVETE TUTOR */}
-      <section className="w-full mt-20 max-w-5xl bg-[#c7f4ff] py-10 px-6 text-center rounded-2xl shadow-sm">
-        <div className="max-w-xl mx-auto space-y-5">
-          <div className="w-full h-48 bg-gray-200 rounded-lg flex items-center justify-center">
-            <span className="text-gray-500 text-sm">[Imagen de tutoría]</span>
-          </div>
-          <h2 className="text-2xl font-semibold text-[#0b615b]">
-            ¡Vuélvete un tutor!
-          </h2>
-          <p className="text-sm text-[#4b4b4b]">
-            Este es un texto invitando a volverte tutor, animando a enseñar tus
-            habilidades y generar ingresos.
-          </p>
-          <button className="bg-[#0b615b] text-white px-8 py-2 rounded-full font-semibold hover:bg-[#0a7f77] transition">
-            Saber más
-          </button>
-        </div>
-      </section>
+      <section className="w-full mt-20 bg-gradient-to-r from-[#c7f4ff] to-[#e6fbff] py-16 px-6 rounded-2xl shadow-sm">
+  <div className="max-w-6xl mx-auto flex flex-col md:flex-row items-center gap-10 md:gap-16">
+    {/* Imagen */}
+    <div className="relative w-full md:w-1/2 h-64 md:h-80 rounded-2xl overflow-hidden shadow-lg hover:scale-[1.02] transition-transform duration-300">
+      <Image
+        src="/tutoria16.jpg"
+        alt="Tutor enseñando en clase"
+        fill
+        className="object-cover"
+        priority
+      />
+      <div className="absolute inset-0 bg-[#0b615b20]" />
+    </div>
+
+    {/* Texto */}
+    <div className="md:w-1/2 text-center md:text-left space-y-5">
+      <h2 className="text-3xl font-bold text-[#0b615b]">
+        ¡Conviértete en tutor!
+      </h2>
+      <p className="text-gray-600 text-base leading-relaxed">
+        Comparte tus conocimientos con miles de estudiantes y genera ingresos
+        enseñando lo que te apasiona. Únete a nuestra comunidad de tutores
+        certificados y empieza a transformar vidas hoy mismo.
+      </p>
+      <button className="bg-[#0b615b] text-white px-8 py-3 rounded-full font-semibold hover:bg-[#0a7f77] transition duration-300 shadow-md hover:shadow-lg">
+        Saber más
+      </button>
+    </div>
+  </div>
+</section>
+
 
       {/* CIUDADES */}
       <section className="w-full mt-20 text-center">
