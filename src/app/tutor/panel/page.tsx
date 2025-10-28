@@ -51,7 +51,7 @@ export default function TutorPanel() {
                 <div className="bg-white shadow-md rounded-2xl p-6 flex flex-col items-center justify-center text-center">
                   <div className="w-32 h-32 rounded-full overflow-hidden shadow-md">
                     <Image
-                      src={user?.avatar || "/default-avatar.png"}
+                      src={user?.avatar || "https://i.pinimg.com/564x/a0/77/70/a077702ce59215b8b5555fcbfa9604e4.jpg"}
                       alt="Tutor"
                       width={128}
                       height={128}
@@ -152,7 +152,7 @@ export default function TutorPanel() {
                       className="flex items-start gap-4 border border-[#e0e0e0] rounded-xl p-4"
                     >
                       <Image
-                        src="/default-avatar.png"
+                        src="https://1.bp.blogspot.com/-_sEoHg_XDdU/Wm9aRBP3mxI/AAAAAAAAEfc/RNhCzXjPfCEuvUMikYK_lnTSoVH4ZzjegCK4BGAYYCw/s1600/look5-look5.st.JPG"
                         alt="Reseña usuario"
                         width={45}
                         height={45}
@@ -182,15 +182,30 @@ export default function TutorPanel() {
                 <h3 className="text-[#0b615b]/80 font-semibold text-lg mb-6">
                   Editar Horario
                 </h3>
-                <div className="rounded-xl overflow-hidden shadow-inner flex justify-center">
-                  <Image
-                    src="/horario.png"
-                    alt="Horario semanal"
-                    width={600}
-                    height={400}
-                    className="object-contain"
-                  />
+                {/* Collage tipo mosaico del horario */}
+                <div className="grid grid-cols-2 md:grid-cols-4 auto-rows-[88px] gap-3">
+                  {[
+                    { day: "Lunes", time: "08:00 - 10:00", span: "col-span-2 row-span-2", from: "#c7f4ff", to: "#eafff7" },
+                    { day: "Martes", time: "14:00 - 16:00", span: "row-span-1", from: "#ffe4e6", to: "#fff7ed" },
+                    { day: "Miércoles", time: "18:00 - 19:30", span: "row-span-1", from: "#e0f2fe", to: "#f0fdfa" },
+                    { day: "Jueves", time: "09:00 - 11:00", span: "row-span-2", from: "#f5f3ff", to: "#ecfeff" },
+                    { day: "Viernes", time: "16:00 - 18:00", span: "col-span-2 row-span-1", from: "#fff7ed", to: "#f0fdf4" },
+                    { day: "Sábado", time: "10:00 - 12:00", span: "row-span-1", from: "#e9d5ff", to: "#f0f9ff" },
+                    { day: "Domingo", time: "Libre", span: "row-span-1", from: "#f1f5f9", to: "#ffffff" },
+                  ].map((slot, idx) => (
+                    <div
+                      key={idx}
+                      className={`${slot.span} rounded-xl p-4 border border-[#e8e8e8] shadow-sm hover:shadow-md transition`}
+                      style={{
+                        backgroundImage: `linear-gradient(135deg, ${slot.from}, ${slot.to})`,
+                      }}
+                    >
+                      <p className="text-xs uppercase tracking-wide text-[#0b615b]/60">{slot.day}</p>
+                      <p className="text-[#0b615b] font-semibold leading-tight">{slot.time}</p>
+                    </div>
+                  ))}
                 </div>
+                <p className="text-xs text-gray-400 mt-3">Vista ilustrativa tipo collage. (No editable aún)</p>
               </section>
             </>
           )}

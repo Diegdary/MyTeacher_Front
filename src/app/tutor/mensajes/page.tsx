@@ -6,11 +6,13 @@ import { FaArrowRight } from "react-icons/fa";
 
 export default function Mensajes() {
   const [selectedChat, setSelectedChat] = useState(0);
+  const defaultAvatarUrl =
+    "https://1.bp.blogspot.com/-_sEoHg_XDdU/Wm9aRBP3mxI/AAAAAAAAEfc/RNhCzXjPfCEuvUMikYK_lnTSoVH4ZzjegCK4BGAYYCw/s1600/look5-look5.st.JPG";
   const chats = [
     {
       id: 1,
       nombre: "Héctor",
-      avatar: "/default-avatar.png",
+      avatar: defaultAvatarUrl,
       mensajes: [
         { autor: "Héctor", texto: "Hola, me interesa la clase de baile." },
         { autor: "Tú", texto: "¡Hola Héctor! Claro, cuéntame qué nivel tienes." },
@@ -19,7 +21,7 @@ export default function Mensajes() {
     {
       id: 2,
       nombre: "Otro Héctor",
-      avatar: "/default-avatar.png",
+      avatar: defaultAvatarUrl,
       mensajes: [
         { autor: "Otro Héctor", texto: "¿Tienes horarios disponibles en la tarde?" },
       ],
