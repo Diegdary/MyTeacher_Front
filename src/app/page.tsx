@@ -66,6 +66,11 @@ const handleLogin = async () => {
       setEmail("");
       setPassword("");
       setSuccess(null);
+      try {
+        const params = new URLSearchParams(window.location.search);
+        const next = params.get("next");
+        if (next) router.push(next);
+      } catch {}
     }, 1500);
   } catch (err: any) {
     setError(err.message || "Error desconocido 😕");
@@ -150,6 +155,14 @@ useEffect(() => {
   window.addEventListener("userLoggedIn", handleLoginEvent);
 
   return () => window.removeEventListener("userLoggedIn", handleLoginEvent);
+}, []);
+
+// Abrir modal de login automáticamente si ?login=1
+useEffect(() => {
+  try {
+    const params = new URLSearchParams(typeof window !== "undefined" ? window.location.search : "");
+    if (params.get("login") === "1") setShowLogin(true);
+  } catch {}
 }, []);
 
 

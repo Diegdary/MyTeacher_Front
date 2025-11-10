@@ -53,6 +53,15 @@ export default function Header({
             </button>
           )}
 
+          {user && (
+            <button
+              onClick={() => router.push("/mensajeria")}
+              className="hidden sm:inline-flex items-center rounded-full text-sm font-medium px-4 py-2 transition bg-[#0b615b]/10 text-[#0b615b] hover:bg-[#0b615b]/15"
+            >
+              Mensajería
+            </button>
+          )}
+
           {/* --- USUARIO --- */}
           {user ? (
             <div className="relative">
