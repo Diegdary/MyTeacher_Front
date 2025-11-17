@@ -4,6 +4,7 @@ import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faMagnifyingGlass } from "@fortawesome/free-solid-svg-icons";
+import Image from "next/image";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:8000/api/auth";
 
@@ -50,29 +51,10 @@ export default function Categorias() {
   };
 
   return (
-    <section className="w-full mt-12 mb-16 text-center px-4 max-w-6xl mx-auto">
+    <section className="flex flex-col w-full mt-12 mb-16 text-center px-4 max-w-6xl mx-auto">
       <h2 className="text-3xl font-semibold text-[#0b615b] mb-8">
         Categorías populares
       </h2>
-
-      {/* 🔍 BUSCADOR */}
-      <div className="flex justify-center mb-8">
-        <div className="flex w-[90%] max-w-lg rounded-full overflow-hidden bg-gradient-to-r from-[#c7f4ff] to-[#e8ffff] shadow-sm border border-[#0b615b20]">
-          <input
-            type="text"
-            placeholder="Busca una categoría..."
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            className="flex-grow px-6 py-3 bg-transparent outline-none text-[#0b615b] placeholder-[#64a7b3]"
-          />
-          <button
-            onClick={() => fetchCategorias()}
-            className="bg-[#0b615b] text-white px-6 hover:bg-[#0a7f77] transition"
-          >
-            <FontAwesomeIcon icon={faMagnifyingGlass} />
-          </button>
-        </div>
-      </div>
 
       {/* GRID DE CATEGORÍAS */}
       {loading ? (
@@ -122,6 +104,104 @@ export default function Categorias() {
           </button>
         </div>
       )}
+
+      <h2 className="text-3xl font-semibold text-[#0b615b] my-8">Cursos</h2>
+
+      {/* 🔍 BUSCADOR */}
+      <div className="flex justify-center mb-8">
+        <div className="flex w-[90%] max-w-lg rounded-full overflow-hidden bg-gradient-to-r from-[#c7f4ff] to-[#e8ffff] shadow-sm border border-[#0b615b20]">
+          <select className="text-[#0b615b]" name="" id="">
+            <option value="example">Example</option>
+            <option value="example">Example 2</option>
+            <option value="example">Example 3</option>
+          </select>
+          <input
+            type="text"
+            placeholder="Busca una categoría..."
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            className="flex-grow px-6 py-3 bg-transparent outline-none text-[#0b615b] placeholder-[#64a7b3]"
+          />
+          <button
+            onClick={() => fetchCategorias()}
+            className="bg-[#0b615b] text-white px-6 hover:bg-[#0a7f77] transition"
+          >
+            <FontAwesomeIcon icon={faMagnifyingGlass} />
+          </button>
+        </div>
+      </div>
+
+      {/* Contenedor de cursos */}
+      <article className="flex w-[100%] self-center">
+        <div className="w-[30%] border-r-1 border-gray-300">
+          <div>
+            <input type="checkbox" name="" id="" />
+            <label className="ml-2.5" htmlFor="anything">anything</label>
+          </div>
+          <div>
+            <input type="checkbox" name="" id="" />
+            <label className="ml-2.5" htmlFor="anything">anything</label>
+          </div>
+          <div>
+            <input type="checkbox" name="" id="" />
+            <label className="ml-2.5" htmlFor="anything">anything</label>
+          </div>
+        </div>
+        <div className="w-[70%] grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5">
+          <div>
+            <figure className="rounded-3xl w-full h-25 relative overflow-hidden">
+              <Image
+                src="/tutoria16.jpg"
+                alt="Tutor enseñando en clase"
+                fill
+                className="object-cover h-full w-full static"
+                priority
+                
+              />
+            </figure>
+            <h3>Curso de barberia</h3>
+            <p>35.000$</p>
+            <p>descripcion del curso que esta tomando el estudiante para conocer mas a fondo el curso</p>
+          </div>
+
+          <div>
+            <figure className="rounded-3xl w-full h-25 relative overflow-hidden">
+              <Image
+                src="/tutoria16.jpg"
+                alt="Tutor enseñando en clase"
+                fill
+                className="object-cover h-full w-full static"
+                priority
+                
+              />
+            </figure>
+            <h3>Curso de barberia</h3>
+            <p>35.000$</p>
+            <p>descripcion del curso que esta tomando el estudiante para conocer mas a fondo el curso</p>
+          </div>
+
+          <div>
+            <figure className="rounded-3xl w-full h-25 relative overflow-hidden">
+              <Image
+                src="/tutoria16.jpg"
+                alt="Tutor enseñando en clase"
+                fill
+                className="object-cover h-full w-full static"
+                priority
+                
+              />
+            </figure>
+            <h3>Curso de barberia</h3>
+            <p>35.000$</p>
+            <p>descripcion del curso que esta tomando el estudiante para conocer mas a fondo el curso</p>
+          </div>
+
+        </div>
+      </article>
+
+      
+
+      
 
       {/* PAGINACIÓN */}
       {!nextPage && categorias.length >= visibleCount && !loading && (
