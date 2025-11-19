@@ -3,7 +3,7 @@ import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faMagnifyingGlass } from "@fortawesome/free-solid-svg-icons";
+import { faMagnifyingGlass, faDollarSign } from "@fortawesome/free-solid-svg-icons";
 import Image from "next/image";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:8000/api/auth";
@@ -111,7 +111,7 @@ export default function Categorias() {
       <div className="flex justify-center mb-8">
         <div className="flex w-[90%] max-w-lg rounded-full overflow-hidden bg-gradient-to-r from-[#c7f4ff] to-[#e8ffff] shadow-sm border border-[#0b615b20]">
           <select className="text-[#0b615b]" name="" id="">
-            <option value="example">Example</option>
+            <option value="">Categoría</option>
             <option value="example">Example 2</option>
             <option value="example">Example 3</option>
           </select>
@@ -132,68 +132,57 @@ export default function Categorias() {
       </div>
 
       {/* Contenedor de cursos */}
-      <article className="flex w-[100%] self-center">
-        <div className="w-[30%] border-r-1 border-gray-300">
-          <div>
-            <input type="checkbox" name="" id="" />
-            <label className="ml-2.5" htmlFor="anything">anything</label>
+      <article className="flex flex-col sm:flex-row justify-center w-[100%] sm:h-[620px] self-center">
+        <div className=" flex flex-row sm:flex-col justify-around sm:justify-start items-start sm:w-[20%] sm:border-r-1 border-gray-300">
+          <div className="flex flex-col items-start">
+            <h3 className="font-bold">Ciudades:</h3>
+            <div>
+              <input type="checkbox" name="" id="" />
+              <label className="ml-2.5" htmlFor="anything">Barranquilla</label>
+            </div>
+            <div>
+              <input type="checkbox" name="" id="" />
+              <label className="ml-2.5" htmlFor="anything">Cartagena</label>
+            </div>
+            <div>
+              <input type="checkbox" name="" id="" />
+              <label className="ml-2.5" htmlFor="anything">Medellín</label>
+            </div>
+            <br />
           </div>
-          <div>
-            <input type="checkbox" name="" id="" />
-            <label className="ml-2.5" htmlFor="anything">anything</label>
+          <div className="flex flex-col items-start">
+            <h3 className="font-bold">Modalidad:</h3>
+            <div>
+              <input type="checkbox" name="" id="" />
+              <label className="ml-2.5" htmlFor="anything">Presencial</label>
+            </div>
+            <div>
+              <input type="checkbox" name="" id="" />
+              <label className="ml-2.5" htmlFor="anything">Virtual</label>
+            </div>
+            <div>
+              <input type="checkbox" name="" id="" />
+              <label className="ml-2.5" htmlFor="anything">Ambas</label>
+            </div>
           </div>
-          <div>
-            <input type="checkbox" name="" id="" />
-            <label className="ml-2.5" htmlFor="anything">anything</label>
-          </div>
+
         </div>
-        <div className="w-[70%] grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5">
-          <div>
-            <figure className="rounded-3xl w-full h-25 relative overflow-hidden">
+        <div className="px-6 w-[80%] grid grid-rows-2 grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5">
+          <div className="flex flex-col justify-center h-[300px]">
+            <figure className="rounded-3xl w-full h-30 relative overflow-hidden">
               <Image
                 src="/tutoria16.jpg"
                 alt="Tutor enseñando en clase"
                 fill
                 className="object-cover h-full w-full static"
                 priority
-                
               />
             </figure>
-            <h3>Curso de barberia</h3>
-            <p>35.000$</p>
-            <p>descripcion del curso que esta tomando el estudiante para conocer mas a fondo el curso</p>
-          </div>
-
-          <div>
-            <figure className="rounded-3xl w-full h-25 relative overflow-hidden">
-              <Image
-                src="/tutoria16.jpg"
-                alt="Tutor enseñando en clase"
-                fill
-                className="object-cover h-full w-full static"
-                priority
-                
-              />
-            </figure>
-            <h3>Curso de barberia</h3>
-            <p>35.000$</p>
-            <p>descripcion del curso que esta tomando el estudiante para conocer mas a fondo el curso</p>
-          </div>
-
-          <div>
-            <figure className="rounded-3xl w-full h-25 relative overflow-hidden">
-              <Image
-                src="/tutoria16.jpg"
-                alt="Tutor enseñando en clase"
-                fill
-                className="object-cover h-full w-full static"
-                priority
-                
-              />
-            </figure>
-            <h3>Curso de barberia</h3>
-            <p>35.000$</p>
-            <p>descripcion del curso que esta tomando el estudiante para conocer mas a fondo el curso</p>
+            <h3 className="font-bold">Curso de barberia</h3>
+            <p><b>Precio: </b>$35.000</p>
+            <p><b>Tutor:</b> Hernando Vargas</p>
+            <p><b>Modalidad:</b> Presencial</p>
+            <p><b>Ciudad:</b> Barranquilla</p>
           </div>
 
         </div>
