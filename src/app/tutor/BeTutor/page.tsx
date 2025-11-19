@@ -33,6 +33,7 @@ export default function BecomeTutorWizard() {
   const [cursoDescripcion, setCursoDescripcion] = useState("");
   const [modalidad, setModalidad] = useState<"presencial"|"virtual"|"ambas">("presencial");
   const [precio, setPrecio] = useState<string>("");
+  const [cursoCiudad, setCursoCiudad] = useState<string>("");
 
 
   const [loading, setLoading] = useState(false);
@@ -78,15 +79,19 @@ export default function BecomeTutorWizard() {
     setSuccess(null);
 
     if (!categoria) {
-      setError("Selecciona una categoría.");
+      setError("Selecciona una categoria.");
       return;
     }
     if (!cursoNombre || !cursoDescripcion) {
-      setError("Completa el título y la descripción del curso.");
+      setError("Completa el titulo y la descripcion del curso.");
+      return;
+    }
+    if (!cursoCiudad.trim()) {
+      setError("Indica la ciudad donde impartes este curso.");
       return;
     }
     if (!precio || isNaN(Number(precio))) {
-      setError("Indica un precio válido.");
+      setError("Indica un precio valido.");
       return;
     }
 
@@ -99,8 +104,8 @@ export default function BecomeTutorWizard() {
           descripcion: cursoDescripcion,
           modalidad,
           precio: Number(precio),
+          ciudad: cursoCiudad.trim(),
           categoria: categoria.id_categoria,
-          
         }),
       });
       const data = await res.json();
@@ -110,8 +115,7 @@ export default function BecomeTutorWizard() {
         throw new Error(msg);
       }
 
-      setSuccess("🎉 ¡Curso creado! Tu cuenta ahora es Tutor.");
-      
+      setSuccess("Curso creado. Tu cuenta ahora es Tutor.");
       setTimeout(() => setStep("done"), 1400);
     } catch (e: any) {
       setError(e.message || "Error al crear el curso");
@@ -168,12 +172,14 @@ export default function BecomeTutorWizard() {
           )}
 
           {step === 3 && (
-            <Step3Config
-              modalidad={modalidad}
-              setModalidad={setModalidad}
-              precio={precio}
-              setPrecio={setPrecio}
-            />
+          <Step3Config
+            modalidad={modalidad}
+            setModalidad={setModalidad}
+            precio={precio}
+            setPrecio={setPrecio}
+            ciudad={cursoCiudad}
+            setCiudad={setCursoCiudad}
+          />
           )}
 
           {/* Mensajes bonitos */}
@@ -340,11 +346,19 @@ function Step2Info({
 }
 
 function Step3Config({
-  modalidad, setModalidad, precio, setPrecio,
+  modalidad,
+  setModalidad,
+  precio,
+  setPrecio,
+  ciudad,
+  setCiudad,
 }: {
-  modalidad: "presencial"|"virtual"|"ambas";
-  setModalidad: (m: "presencial"|"virtual"|"ambas") => void;
-  precio: string; setPrecio: (v: string) => void;
+  modalidad: "presencial" | "virtual" | "ambas";
+  setModalidad: (m: "presencial" | "virtual" | "ambas") => void;
+  precio: string;
+  setPrecio: (v: string) => void;
+  ciudad: string;
+  setCiudad: (v: string) => void;
 }) {
   return (
     <div>
@@ -363,6 +377,14 @@ function Step3Config({
           </label>
         ))}
       </div>
+
+      <label className="block text-[#356a6f] mb-2">Ciudad principal donde dictas tus clases</label>
+      <input
+        value={ciudad}
+        onChange={(e) => setCiudad(e.target.value)}
+        placeholder="Ej: Medellín"
+        className="w-full rounded-full bg-[#c7f4ff] px-5 py-2 outline-none mb-5"
+      />
 
       <label className="block text-[#356a6f] mb-2">Escribe tu precio por hora</label>
       <input

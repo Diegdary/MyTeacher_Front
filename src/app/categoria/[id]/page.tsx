@@ -135,28 +135,36 @@ export default function CategoriaCursosPage() {
     loadTutores(cursos);
   }, [cursos, loadTutores]);
 
-  const name = categoria?.nombre || `Categoría ${catId}`;
+  const name = categoria?.nombre || `Categoria ${catId}`;
 
   return (
-    <main className="min-h-screen pt-24 pb-16 px-4 bg-[#f7fafa]">
-      <div className="max-w-6xl mx-auto">
-        <div className="flex items-center justify-between mb-6">
-          <h1 className="text-2xl md:text-3xl font-semibold text-[#0b615b]">{name}</h1>
-          <button onClick={() => router.back()} className="text-sm text-[#0b615b] hover:underline">Volver</button>
+    <main className="relative min-h-screen bg-gradient-to-b from-[#f2fbfb] via-white to-[#f7fafa] py-20 px-4">
+      <div className="absolute inset-x-0 top-0 h-64 bg-gradient-to-b from-[#dff7f6]/70 to-transparent blur-3xl pointer-events-none" />
+      <div className="relative max-w-6xl mx-auto bg-white/85 backdrop-blur-sm border border-white rounded-3xl shadow-xl px-6 md:px-10 py-8">
+        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-8">
+          <div>
+            <p className="text-xs uppercase tracking-[0.3em] text-[#0b615b]/60">Categoria</p>
+            <h1 className="text-3xl md:text-4xl font-semibold text-[#0b615b]">{name}</h1>
+          </div>
+          <button
+            onClick={() => router.back()}
+            className="self-start md:self-auto text-sm px-4 py-2 rounded-full border border-[#0b615b]/30 text-[#0b615b] hover:bg-[#0b615b]/10 transition"
+          >
+            Volver
+          </button>
         </div>
 
         {error && (
           <div className="mb-4 rounded-lg border border-red-200 bg-red-50 text-red-700 px-4 py-2 text-sm">{error}</div>
         )}
 
-        {/* Filtros */}
-        <div className="mb-4 flex flex-col md:flex-row gap-3">
-          <div className="flex items-center gap-2">
-            <label className="text-sm text-[#0b615b]">Modalidad</label>
+        <div className="mb-8 grid gap-4 md:grid-cols-3 bg-[#e9f8f7] border border-[#0b615b]/10 rounded-2xl p-5 shadow-inner">
+          <div className="flex flex-col gap-1">
+            <label className="text-xs font-semibold text-[#0b615b]/80 uppercase tracking-wide">Modalidad</label>
             <select
               value={modFilter}
               onChange={(e) => setModFilter(e.target.value)}
-              className="border rounded-lg px-2 py-1 text-sm"
+              className="rounded-2xl border border-transparent bg-white px-4 py-2 text-sm text-[#0b615b] shadow-sm focus:outline-none focus:ring-2 focus:ring-[#0b615b]/40"
             >
               <option value="">Todas</option>
               <option value="presencial">Presencial</option>
@@ -164,21 +172,25 @@ export default function CategoriaCursosPage() {
               <option value="ambas">Ambas</option>
             </select>
           </div>
-          <div className="flex items-center gap-2">
-            <label className="text-sm text-[#0b615b]">Ciudad</label>
+          <div className="flex flex-col gap-1">
+            <label className="text-xs font-semibold text-[#0b615b]/80 uppercase tracking-wide">Ciudad</label>
             <input
               value={cityFilter}
               onChange={(e) => setCityFilter(e.target.value)}
-              placeholder="Ej: Bogotá"
-              className="border rounded-lg px-2 py-1 text-sm"
+              placeholder="Ej: Bogota"
+              className="rounded-2xl border border-transparent bg-white px-4 py-2 text-sm text-[#0b615b] placeholder-[#6ca9a5] shadow-sm focus:outline-none focus:ring-2 focus:ring-[#0b615b]/40"
             />
+          </div>
+          <div className="flex flex-col justify-end">
+            <p className="text-xs text-[#0b615b]/70 mb-1">Cursos encontrados</p>
+            <p className="text-2xl font-semibold text-[#0b615b]">{cursos.length}</p>
           </div>
         </div>
 
         {loading ? (
-          <p className="text-gray-500">Cargando cursos…</p>
+          <p className="text-[#0b615b]/70">Cargando cursos...</p>
         ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {cursos.map((curso: any) => (
               <CursoCard
                 key={curso.id_curso || curso.id}
@@ -189,10 +201,6 @@ export default function CategoriaCursosPage() {
                   if (!user) {
                     const next = `${pathname}`;
                     router.push(`/?login=1&next=${encodeURIComponent(next)}`);
-                    return;
-                  }
-                  if (user?.rol !== "estudiante") {
-                    setRequestMsg("Debes iniciar sesión como estudiante para solicitar.");
                     return;
                   }
                   setRequestFor(curso.id_curso || curso.id);
@@ -206,10 +214,10 @@ export default function CategoriaCursosPage() {
         )}
 
         {!loading && cursos.length === 0 && !error && (
-          <p className="text-gray-400 mt-6">No hay cursos en esta categoría.</p>
+          <p className="text-gray-400 mt-6 text-center">No hay cursos en esta categoria.</p>
         )}
         {requestMsg && (
-          <div className="mt-6 rounded-lg border border-emerald-200 bg-emerald-50 text-emerald-700 px-4 py-2 text-sm">
+          <div className="mt-6 rounded-2xl border border-emerald-200 bg-emerald-50 text-emerald-700 px-5 py-3 text-sm shadow-sm">
             {requestMsg}
           </div>
         )}
@@ -250,42 +258,62 @@ function CursoCard({ curso, tutor, isRequestOpen, onOpenRequest, onCloseRequest,
   const desc = curso?.descripcion || "";
   const tutorNombre = tutor?.username || tutor?.email || `Tutor ${tutor?.id ?? ""}`;
   const rating = tutor?.calificacion_promedio;
-  const canRequest = user?.rol === "estudiante";
+  const canRequest = Boolean(user);
 
   return (
-    <div className="group bg-white border border-[#0b615b]/30 rounded-2xl shadow-sm hover:shadow-md transition p-5 flex flex-col justify-between min-h-[240px]">
-      <div>
-        <h3 className="text-lg font-semibold text-[#0b615b] mb-1">{nombre}</h3>
-        <p className="text-xs text-[#0b615b]/70 mb-2">{modalidad}{ciudad ? ` · ${ciudad}` : ""}</p>
-        <p className="text-gray-600 text-sm line-clamp-3">{desc}</p>
+    <div className="relative overflow-hidden rounded-3xl border border-[#0b615b]/15 bg-gradient-to-br from-white via-[#f9fffe] to-[#e4f6f4] p-6 shadow-lg transition-transform duration-200 hover:-translate-y-1">
+      <div className="absolute inset-x-0 -top-8 h-24 bg-gradient-to-br from-[#0b615b]/15 to-transparent blur-2xl pointer-events-none" />
+      <div className="relative z-10 flex items-start justify-between mb-4">
+        <div>
+          <p className="text-xs uppercase tracking-[0.3em] text-[#0b615b]/50">Curso</p>
+          <h3 className="text-xl font-semibold text-[#0b615b]">{nombre}</h3>
+        </div>
+        {precio != null && (
+          <div className="text-right">
+            <p className="text-xs text-[#0b615b]/60">Precio</p>
+            <p className="text-lg font-semibold text-[#0b615b]">${precio.toFixed(2)}</p>
+          </div>
+        )}
       </div>
-      <div className="mt-3 flex items-center justify-between">
-        <div className="text-sm text-[#0b615b]">
-          <p className="font-medium">{tutorNombre}</p>
+      <div className="relative z-10 flex flex-wrap gap-2 text-xs text-[#0b615b]">
+        {modalidad && (
+          <span className="px-3 py-1 rounded-full bg-white border border-[#0b615b]/20 shadow-sm capitalize">
+            {modalidad}
+          </span>
+        )}
+        {ciudad && (
+          <span className="px-3 py-1 rounded-full bg-white border border-[#0b615b]/20 shadow-sm">
+            {ciudad}
+          </span>
+        )}
+      </div>
+      <p className="relative z-10 mt-3 text-sm text-gray-600 line-clamp-3">{desc || "Sin descripcion"}</p>
+      <div className="relative z-10 mt-5 flex items-center justify-between gap-4">
+        <div>
+          <p className="text-sm font-semibold text-[#0b615b]">{tutorNombre}</p>
           {rating != null && (
-            <p className="text-xs text-[#0b615b]/70">Calificación: {Number(rating).toFixed(1)}</p>
+            <p className="text-xs text-[#0b615b]/60">Calificacion: {Number(rating).toFixed(1)}</p>
           )}
         </div>
-        <div className="text-right">
-          {precio != null && (
-            <p className="text-[#0b615b] font-semibold">${precio.toFixed(2)}</p>
-          )}
-          <div className="flex gap-2 justify-end mt-1">
-            <Link href="#" className="text-xs text-[#0b615b] hover:underline">Ver detalle</Link>
-            <button
-              onClick={onOpenRequest}
-              disabled={!canRequest}
-              className="text-xs px-3 py-1 rounded-full border border-[#0b615b]/40 text-[#0b615b] hover:bg-[#e6f9ff] disabled:opacity-50"
-              title={canRequest ? "Enviar solicitud" : "Inicia sesión como estudiante"}
-            >
-              Solicitar
-            </button>
-          </div>
+        <div className="flex flex-col items-end gap-2 text-xs">
+          <Link href="#" className="text-[#0b615b] hover:underline">
+            Ver detalle
+          </Link>
+          <button
+            onClick={onOpenRequest}
+            disabled={!canRequest}
+            className="px-4 py-1.5 rounded-full bg-[#0b615b] text-white shadow disabled:opacity-50"
+            title={canRequest ? "Enviar solicitud" : "Inicia sesión para solicitar"}
+          >
+            Solicitar
+          </button>
         </div>
       </div>
       {isRequestOpen && (
-        <SolicitudForm curso={curso} onClose={onCloseRequest} onSubmitted={onSubmitted} />)
-      }
+        <div className="relative z-10 mt-4">
+          <SolicitudForm curso={curso} onClose={onCloseRequest} onSubmitted={onSubmitted} />
+        </div>
+      )}
     </div>
   );
 }
@@ -298,13 +326,53 @@ function SolicitudForm({ curso, onClose, onSubmitted }: { curso: any; onClose: (
   const [mensaje, setMensaje] = React.useState<string>("");
   const [loading, setLoading] = React.useState(false);
   const [error, setError] = React.useState<string | null>(null);
+  const [hasExistingRequest, setHasExistingRequest] = React.useState(false);
+  const [existingStatus, setExistingStatus] = React.useState<string | null>(null);
 
   const token = typeof window !== "undefined" ? localStorage.getItem("access") : null;
 
   const options = courseMod === "ambas" ? ["presencial", "virtual"] : [courseMod];
 
+  React.useEffect(() => {
+    if (!token) return;
+    const courseId = curso?.id_curso || curso?.id;
+    if (!courseId) return;
+    (async () => {
+      try {
+        const headers: any = { "Content-Type": "application/json" };
+        if (token) headers.Authorization = `Bearer ${token}`;
+        const res = await fetch(SOLI, { headers });
+        const data = await res.json().catch(() => null);
+        const list = Array.isArray(data) ? data : data?.results ?? [];
+        const normalizedCourseId = Number(courseId);
+        const related = list.find((s: any) => {
+          const id = Number(s?.curso?.id ?? s?.curso?.id_curso ?? s?.curso);
+          const state = String(s?.estado || s?.estado_solicitud || "").toLowerCase();
+          return (
+            id === normalizedCourseId &&
+            !["rechazada", "cancelada", "finalizada"].includes(state)
+          );
+        });
+        if (related) {
+          setHasExistingRequest(true);
+          setExistingStatus(related?.estado || related?.estado_solicitud || "pendiente");
+        } else {
+          setHasExistingRequest(false);
+          setExistingStatus(null);
+        }
+      } catch {
+        setHasExistingRequest(false);
+        setExistingStatus(null);
+      }
+    })();
+  }, [token, curso]);
+
   const handleSubmit = async () => {
     setError(null);
+    if (hasExistingRequest) {
+      setError("Ya tienes una solicitud activa para este curso.");
+      return;
+    }
     if (!fecha || !modalidad) { setError("Completa fecha y modalidad"); return; }
     setLoading(true);
     try {
@@ -361,8 +429,19 @@ function SolicitudForm({ curso, onClose, onSubmitted }: { curso: any; onClose: (
       </div>
       <div className="mt-2 flex justify-end gap-2">
         <button onClick={onClose} className="text-xs px-3 py-1.5 rounded-full border border-gray-300 text-gray-600 hover:bg-gray-50">Cancelar</button>
-        <button onClick={handleSubmit} disabled={loading} className="text-xs px-3 py-1.5 rounded-full border border-[#0b615b] text-white bg-[#0b615b] hover:bg-[#0a7f77] disabled:opacity-60">{loading ? "Enviando…" : "Enviar"}</button>
+        <button
+          onClick={handleSubmit}
+          disabled={loading || hasExistingRequest}
+          className="text-xs px-3 py-1.5 rounded-full border border-[#0b615b] text-white bg-[#0b615b] hover:bg-[#0a7f77] disabled:opacity-60"
+        >
+          {hasExistingRequest ? "Solicitud enviada" : loading ? "Enviando…" : "Enviar"}
+        </button>
       </div>
+      {hasExistingRequest && (
+        <p className="mt-2 text-xs text-[#0b615b]">
+          Ya existe una solicitud {existingStatus?.toLowerCase() || "activa"} para este curso.
+        </p>
+      )}
     </div>
   );
 }

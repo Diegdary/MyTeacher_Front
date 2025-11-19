@@ -11,6 +11,7 @@ import { FaStar } from "react-icons/fa";
 const CONV_ENDPOINT = `${API_BASE}/crud/conversaciones/`;
 const MSG_ENDPOINT = `${API_BASE}/crud/mensajes/`;
 const SOLI_ENDPOINT = `${API_BASE}/crud/solicitudes-reserva/`;
+const CRUD = `${API_BASE}/crud`;
 
 type Conv = any;
 type Msg = any;
@@ -34,6 +35,7 @@ export default function Mensajes() {
   const [reviewRating, setReviewRating] = React.useState<number>(0);
   const [reviewComment, setReviewComment] = React.useState<string>("");
   const [reviewMsg, setReviewMsg] = React.useState<string | null>(null);
+  const [userProfiles, setUserProfiles] = React.useState<Record<number, any>>({});
 
   const token = typeof window !== "undefined" ? localStorage.getItem("access") : null;
   const myId = user?.id || user?.pk || user?.user_id || null;
@@ -90,6 +92,31 @@ export default function Mensajes() {
   }, [token, user, myId]);
 
   React.useEffect(() => { loadConvs(); }, [loadConvs]);
+  React.useEffect(() => {
+    const missingIds = new Set<number>();
+    convs.forEach((conv) => {
+      [conv?.estudiante, conv?.tutor].forEach((participant) => {
+        if (participant && typeof participant !== "object") {
+          const id = Number(participant);
+          if (!Number.isNaN(id) && !(id in userProfiles)) missingIds.add(id);
+        }
+      });
+    });
+    if (!missingIds.size) return;
+    const fetchProfiles = async () => {
+      await Promise.all(
+        Array.from(missingIds).map(async (id) => {
+          try {
+            const data = await authFetch(`${CRUD}/usuarios/${id}/`);
+            setUserProfiles((prev) => ({ ...prev, [id]: data }));
+          } catch {
+            /* ignore */
+          }
+        })
+      );
+    };
+    fetchProfiles();
+  }, [convs, authFetch, userProfiles]);
   React.useEffect(() => { if (selectedConvId) loadMsgs(selectedConvId); }, [selectedConvId, loadMsgs]);
   // Preseleccionar conversación por ?conv=ID
   React.useEffect(() => {
@@ -156,12 +183,24 @@ export default function Mensajes() {
     } catch (e: any) { setError(e.message); }
   }
 
+  const formatUserName = (profile: any, fallbackId?: number | string) => {
+    if (!profile) return fallbackId ? `Usuario ${fallbackId}` : "Usuario";
+    const first = profile.first_name?.trim() ?? "";
+    const last = profile.last_name?.trim() ?? "";
+    const fullName = `${first} ${last}`.trim();
+    return fullName || profile.username || profile.email || (fallbackId ? `Usuario ${fallbackId}` : "Usuario");
+  };
+  const convStatus = (c: any) => c?.estado_solicitud || c?.estado || "pendiente";
+  const isAccepted = (c: any) => convStatus(c) === "aceptada";
+
   function otherPartyName(c: any): string {
     const role = user?.rol;
     const other = role === "tutor" ? c?.estudiante : c?.tutor;
     if (!other) return `Conv #${c?.id}`;
-    if (typeof other === "object") return other?.username || other?.email || `Usuario ${other?.id || ""}`;
-    return `Usuario ${other}`;
+    if (typeof other === "object") return formatUserName(other, other?.id);
+    const id = Number(other);
+    const cached = userProfiles[id];
+    return formatUserName(cached, other);
   }
 
   function isMine(m: any): boolean {
@@ -185,9 +224,29 @@ export default function Mensajes() {
   };
 
   const defaultAvatarUrl = "https://i.pravatar.cc/80";
-  const selectedConv = convs.find((c) => c.id === selectedConvId) || null;
-  const convStatus = (c: any) => c?.estado_solicitud || c?.estado || "pendiente";
-  const isAccepted = (c: any) => convStatus(c) === "aceptada";
+  const filteredConvs = React.useMemo(
+    () => convs.filter((c) => convStatus(c) !== "archivada"),
+    [convs]
+  );
+  const selectedConv = filteredConvs.find((c) => c.id === selectedConvId) || filteredConvs[0] || null;
+
+  const senderDisplayName = (msg: Msg): string => {
+    const remitente = msg?.remitente;
+    if (remitente && typeof remitente === "object") {
+      return formatUserName(remitente, remitente.id);
+    }
+    if (isMine(msg)) {
+      return formatUserName(user, myId ?? "yo");
+    }
+    if (selectedConv) {
+      return otherPartyName(selectedConv);
+    }
+    if (remitente != null) {
+      const cached = userProfiles[Number(remitente)];
+      return formatUserName(cached, remitente);
+    }
+    return "Usuario";
+  };
   const statusChip = (s?: string) => {
     const st = s || "pendiente";
     const map: any = {
@@ -204,6 +263,26 @@ export default function Mensajes() {
     if (!c) return 0;
     const u = user?.rol === "tutor" ? c?.unread_tutor : c?.unread_estudiante;
     return Number(u || 0);
+  };
+  const resolveDisplayName = (entity: any) => {
+    if (!entity) return "Usuario";
+    if (typeof entity === "object") return formatUserName(entity, getId(entity));
+    const numeric = Number(entity);
+    if (Number.isNaN(numeric)) return formatUserName(null, entity);
+    const cached = userProfiles[numeric];
+    return formatUserName(cached, entity);
+  };
+  const solicitudDisplay = (s: any) => {
+    const curso = s?.curso;
+    const nombreCurso =
+      typeof curso === "object"
+        ? curso?.nombre || `Curso ${getId(curso)}`
+        : curso != null
+        ? `Curso ${curso}`
+        : "Curso";
+    const estudianteName = resolveDisplayName(s?.estudiante);
+    const tutorName = resolveDisplayName(s?.curso?.tutor ?? s?.tutor);
+    return `${estudianteName} · ${tutorName} · ${nombreCurso}`;
   };
 
   return (
@@ -268,7 +347,10 @@ export default function Mensajes() {
         )}
         <div className="flex flex-col gap-3">
           {convs.length === 0 && <p className="text-sm text-gray-400">Sin conversaciones</p>}
-          {convs.map((c) => (
+          {filteredConvs.length === 0 && (
+            <p className="text-sm text-gray-400 px-2">No tienes conversaciones activas</p>
+          )}
+          {filteredConvs.map((c) => (
             <button
               key={c.id}
               onClick={() => setSelectedConvId(c.id)}
@@ -408,7 +490,7 @@ export default function Mensajes() {
             {selectedConv && msgs.map((m: any) => (
               <div key={m.id ?? `${m.creado_en}-${Math.random()}`} className={`flex ${isMine(m) ? "justify-end" : "justify-start"}`}>
                 <div className={`max-w-[70%] px-4 py-2 rounded-2xl text-sm ${isMine(m) ? "bg-[#c7f4ff] text-[#0b615b]" : "bg-gray-100 text-gray-700"}`}>
-                  <p className="font-medium mb-0.5">{isMine(m) ? "Tú" : otherPartyName(selectedConv)}</p>
+                  <p className="font-medium mb-0.5">{senderDisplayName(m)}</p>
                   <p>{m.contenido ?? m.texto ?? ""}</p>
                   <p className="text-[10px] text-gray-400 mt-1">{formatDate(m.creado_en || m.created_at)}</p>
                 </div>
@@ -454,14 +536,4 @@ function formatDate(v?: string) {
 
 function getId(x: any) {
   return x?.id ?? x?.pk ?? x?.user_id ?? x?.id_curso ?? x;
-}
-
-function solicitudDisplay(s: any) {
-  const curso = s?.curso;
-  const nombreCurso = (typeof curso === "object" ? (curso?.nombre || `Curso ${getId(curso)}`) : `Curso ${curso}`);
-  const est = s?.estudiante;
-  const estName = typeof est === "object" ? (est?.username || est?.email || `Est. ${getId(est)}`) : `Est. ${est}`;
-  const tutor = s?.curso?.tutor;
-  const tutorName = typeof tutor === "object" ? (tutor?.username || tutor?.email || `Tutor ${getId(tutor)}`) : (tutor ? `Tutor ${tutor}` : "Tutor");
-  return `${estName} · ${tutorName} · ${nombreCurso}`;
 }
